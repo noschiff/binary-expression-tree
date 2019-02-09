@@ -5,36 +5,45 @@ package com.noschiff;
  * @author noschiff
  */
 public enum Operator {
-    add {
+
+    add (1, 1){
         @Override
         public String toString() {
             return "+";
         }
     },
-    sub {
+    sub (1, 1){
         @Override
         public String toString() {
             return "-";
         }
     },
-    mult {
+    mult (2, 1){
         @Override
         public String toString() {
             return "×";
         }
     },
-    div {
+    div (2, 1){
         @Override
         public String toString() {
             return "/";
         }
     },
-    exp {
+    exp (3, 1){
         @Override
         public String toString() {
             return "^";
         }
     };
+
+    public int prescedence;
+    public int associativity;
+
+    Operator(int prescedence, int associativity) {
+        this.prescedence = prescedence;
+        this.associativity = associativity;
+    }
 
     /**
      * Determines whether or not the character is one of the listed operators
@@ -64,5 +73,17 @@ public enum Operator {
             }
         }
         return null;
+    }
+
+    public boolean greaterPrescedenceThan(Operator o) {
+        if (o == null) return true;
+        return (this.prescedence > o.prescedence);
+    }
+    public boolean equalPrescedence(Operator o) {
+        if (o == null) return false;
+        return (this.prescedence == o.prescedence);
+    }
+    public boolean leftAssociative() {
+        return this.associativity == 1;
     }
 }

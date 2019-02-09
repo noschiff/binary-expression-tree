@@ -35,7 +35,7 @@ public class Tree {
      * Constructor that takes a mathematical expression and initializes the tree
      *
      * @param expression - math expression stored in String
-     * @param form - the form that the expression is in
+     * @param form       - the form that the expression is in
      */
     public Tree(String expression, Form form) {
         this.root = initFromExpr(expression, form);
@@ -46,7 +46,7 @@ public class Tree {
      * a mathematical expression in one of three forms
      *
      * @param expression - math expression stored in String
-     * @param form - the form that the expression is in
+     * @param form       - the form that the expression is in
      * @return - the root node of the tree
      */
     private Node initFromExpr(String expression, Form form) {
@@ -117,7 +117,33 @@ public class Tree {
                 break;
             case infix:
                 //TODO - add infix initialization
-                //String postfix = "";
+                StringBuilder postfix = new StringBuilder();
+                Stack<Character> operatorStack = new Stack<>();
+
+                for (int i = 0; i < input.length; i++) {
+                    //character is an operator
+                    if (Operator.isOperator(input[i])) {
+                        while ((operatorStack.peek() != '(') &&
+                                ((!Operator.charToOperator(input[i]).greaterPrescedenceThan(Operator.charToOperator(operatorStack.peek())))
+                                        || (Operator.charToOperator(input[i]).equalPrescedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).leftAssociative()))) {
+                            postfix.append(operatorStack.pop());
+                        }
+                        operatorStack.push(input[i]);
+                    } else if (input[i] == '(') {
+                        operatorStack.push(input[i]);
+                    } else if (input[i] == ')') {
+                        while (operatorStack.peek() != '(') {
+                            postfix.append(operatorStack.pop());
+                        }
+                        operatorStack.push(input[i]);
+                    } else {
+                        postfix.append(input[i]);
+                    }
+                }
+                while (!operatorStack.isEmpty()) {
+                    postfix.append(operatorStack.pop());
+                }
+                System.out.println(postfix);
                 //initFromExpr(postfix, Form.postfix);
                 break;
         }
