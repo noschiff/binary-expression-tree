@@ -1,5 +1,7 @@
 package com.noschiff;
 
+import java.util.Objects;
+
 /**
  * Single node that can be apart of a tree
  * @author noschiff
@@ -24,6 +26,16 @@ public class Node {
         this.leftChild = leftChild;
         this.rightChild = rightChild;
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Node node = (Node) o;
+        return Objects.equals(leftChild, node.leftChild) &&
+                Objects.equals(rightChild, node.rightChild) &&
+                Objects.equals(value, node.value);
     }
 
     public Value getValue() {

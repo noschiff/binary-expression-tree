@@ -1,12 +1,16 @@
 package com.noschiff;
 
+import java.util.Objects;
+import java.util.Stack;
+
 /**
  * A binary tree that represents a mathematical expression
+ *
  * @author noschiff
  */
 public class Tree {
     //The root node of the tree
-    private Node root;
+    Node root;
 
     @Deprecated
     public Tree(Node root) {
@@ -14,7 +18,46 @@ public class Tree {
     }
 
     /**
+     * Constructor that takes a postfix expression and initializes the tree
+     *
+     * @param expression - math expression in postfix form
+     */
+    public Tree(String expression, Form form) {
+        char[] input = expression.toCharArray();
+        Stack<Node> stack = new Stack<>();
+
+        switch (form) {
+            case Postfix:
+                for (int i = 0; i < input.length; i++) {
+                    if (Operator.isOperator(input[i])) {
+                        Node root = new Node(Operator.charToOperator(input[i]));
+                        root.rightChild = stack.pop();
+                        root.leftChild = stack.pop();
+                        stack.push(root);
+                    } else if (input[i] != ' ') {
+                        String tempNum = Character.toString(input[i]);
+                        while (input[i + 1] != ' ' && i != input.length - 1) {
+                            tempNum += input[i + 1];
+                            i++;
+                        }
+                        stack.push(new Node(Double.parseDouble(tempNum)));
+                    }
+                }
+                break;
+            case Prefix:
+                //TODO
+                break;
+            case Infix:
+                //TODO
+                break;
+        }
+
+        this.root = stack.pop();
+    }
+
+    /**
      * Constructor to make the tree and initialize it
+     *
      * @param initTree - an interface that holds a method to initialize the tree
      */
     public Tree(InitTree initTree) {
@@ -23,6 +66,7 @@ public class Tree {
 
     /**
      * Evaluates the expression starting from the root
+     *
      * @return - evaluation of the entire tree
      */
     public double evaluate() {
@@ -101,4 +145,13 @@ public class Tree {
                 ", postfix=" + postfix() +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tree tree = (Tree) o;
+        return Objects.equals(root, tree.root);
+    }
+
 }

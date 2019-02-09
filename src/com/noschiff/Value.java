@@ -1,5 +1,7 @@
 package com.noschiff;
 
+import java.util.Objects;
+
 /**
  * Holds the value of the node; either an operand OR double
  * @author noschiff
@@ -37,6 +39,16 @@ public class Value {
 
     public Type getType() {
         return type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Value value1 = (Value) o;
+        return Double.compare(value1.value, value) == 0 &&
+                type == value1.type &&
+                operator == value1.operator;
     }
 
     public Operator getOperator() {
