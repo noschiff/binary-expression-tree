@@ -26,7 +26,7 @@ public enum Operator {
     div {
         @Override
         public String toString() {
-            return "÷";
+            return "/";
         }
     },
     exp {

@@ -10,49 +10,16 @@ import java.util.Stack;
  */
 public class Tree {
     //The root node of the tree
-    Node root;
+    private Node root;
 
+    /**
+     * Constructor that takes a single Node to be the root
+     *
+     * @param root - root of the tree
+     */
     @Deprecated
     public Tree(Node root) {
         this.root = root;
-    }
-
-    /**
-     * Constructor that takes a postfix expression and initializes the tree
-     *
-     * @param expression - math expression in postfix form
-     */
-    public Tree(String expression, Form form) {
-        char[] input = expression.toCharArray();
-        Stack<Node> stack = new Stack<>();
-
-        switch (form) {
-            case Postfix:
-                for (int i = 0; i < input.length; i++) {
-                    if (Operator.isOperator(input[i])) {
-                        Node root = new Node(Operator.charToOperator(input[i]));
-                        root.rightChild = stack.pop();
-                        root.leftChild = stack.pop();
-                        stack.push(root);
-                    } else if (input[i] != ' ') {
-                        String tempNum = Character.toString(input[i]);
-                        while (input[i + 1] != ' ' && i != input.length - 1) {
-                            tempNum += input[i + 1];
-                            i++;
-                        }
-                        stack.push(new Node(Double.parseDouble(tempNum)));
-                    }
-                }
-                break;
-            case Prefix:
-                //TODO
-                break;
-            case Infix:
-                //TODO
-                break;
-        }
-
-        this.root = stack.pop();
     }
 
     /**
@@ -65,7 +32,101 @@ public class Tree {
     }
 
     /**
-     * Evaluates the expression starting from the root
+     * Constructor that takes a mathematical expression and initializes the tree
+     *
+     * @param expression - math expression stored in String
+     * @param form - the form that the expression is in
+     */
+    public Tree(String expression, Form form) {
+        this.root = initFromExpr(expression, form);
+    }
+
+    /**
+     * Creates the root Node with all children initialized from
+     * a mathematical expression in one of three forms
+     *
+     * @param expression - math expression stored in String
+     * @param form - the form that the expression is in
+     * @return - the root node of the tree
+     */
+    private Node initFromExpr(String expression, Form form) {
+        char[] input = expression.toCharArray();
+        Stack<Node> stack = new Stack<>();
+
+        //read input characters based off of form inputted
+        switch (form) {
+            case postfix:
+                //starts at left and moves to the right
+                for (int i = 0; i < input.length; i++) {
+                    //character is an operator
+                    if (Operator.isOperator(input[i])) {
+                        //make a new node with the operator
+                        Node root = new Node(Operator.charToOperator(input[i]));
+
+                        //take the top nodes in stack and assign it to be the children
+                        root.rightChild = stack.pop();
+                        root.leftChild = stack.pop();
+
+                        //put the Node into top of stack
+                        stack.push(root);
+                    }
+                    //character is a number
+                    else if (input[i] != ' ') {
+                        //String to hold the number incase it is multiple characters long
+                        StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
+                        //fill the string with the entire number
+                        while (input[i + 1] != ' ' && i != input.length - 1) {
+                            tempNum.append(input[i + 1]);
+                            i++;
+                        }
+
+                        //add a new Node with value of tempNum
+                        stack.push(new Node(Double.parseDouble(tempNum.toString())));
+                    }
+                }
+                break;
+            case prefix:
+                for (int i = input.length - 1; i >= 0; i--) {
+                    //character is an operator
+                    if (Operator.isOperator(input[i])) {
+                        //make a new node with the operator
+                        Node root = new Node(Operator.charToOperator(input[i]));
+
+                        //take the top nodes in stack and assign it to be the children
+                        root.leftChild = stack.pop();
+                        root.rightChild = stack.pop();
+
+                        //put the Node into top of stack
+                        stack.push(root);
+                    }
+                    //character is a number
+                    else if (input[i] != ' ') {
+                        //String to hold the number incase it is multiple characters long
+                        StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
+                        //fill the string with the entire number
+                        while (input[i - 1] != ' ' && i != 0) {
+                            tempNum.append(input[i - 1]);
+                            i--;
+                        }
+
+                        //add a new Node with value of tempNum
+                        stack.push(new Node(Double.parseDouble(tempNum.reverse().toString())));
+
+                    }
+                }
+                break;
+            case infix:
+                //TODO - add infix initialization
+                //String postfix = "";
+                //initFromExpr(postfix, Form.postfix);
+                break;
+        }
+        //the only Node in the stack left is the root of the new tree
+        return stack.pop();
+    }
+
+    /**
+     * Evaluates the tree starting from the root
      *
      * @return - evaluation of the entire tree
      */
@@ -74,6 +135,8 @@ public class Tree {
     }
 
     /**
+     * Evaluates the tree starting from specified Node
+     *
      * @param node - the node to act on
      * @return - evaluation of the subtree
      */

@@ -1,7 +1,5 @@
 package com.noschiff;
 
-import java.util.Objects;
-
 /**
  * Holds the value of the node; either an operand OR double
  * @author noschiff
@@ -25,7 +23,7 @@ public class Value {
     }
 
     /**
-     * Constructor initialzes the value to hold an operator and sets the type
+     * Constructor initializes the value to hold an operator and sets the type
      * @param operator - operator to be stored
      */
     public Value(Operator operator) {
