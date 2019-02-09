@@ -1,5 +1,6 @@
 package com.noschiff;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Stack;
 
@@ -40,19 +41,22 @@ public class Main {
 //    private static String postToPre(String post) {
 //        return new Tree(post, Form.postfix).prefix();
 
-        String test = "3 + (4 / 5)";
+        String test = "3.3 + (4/ 5)";
         char[] input = test.toCharArray();
-        StringBuilder postfix = new StringBuilder();
+        //StringBuilder postfix = new StringBuilder();
+        ArrayList<String> elements = new ArrayList<>();
         Stack<Character> operatorStack = new Stack<>();
 
         for (int i = 0; i < input.length; i++) {
+            printStack(operatorStack);
+            System.out.println(elements.toString());
             //character is an operator
             if (Operator.isOperator(input[i])) {
                 try {
                     while ((operatorStack.peek() != '(') &&
                             ((!Operator.charToOperator(input[i]).greaterPrescedenceThan(Operator.charToOperator(operatorStack.peek())))
                                     || (Operator.charToOperator(input[i]).equalPrescedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).leftAssociative()))) {
-                        postfix.append(operatorStack.pop());
+                        elements.add(String.valueOf(operatorStack.pop()));
                     }
                 } catch (Exception e) {}
                 operatorStack.push(input[i]);
@@ -60,22 +64,40 @@ public class Main {
                 operatorStack.push(input[i]);
             } else if (input[i] == ')') {
                 while (operatorStack.peek() != '(') {
-                    postfix.append(operatorStack.pop());
+                    elements.add(String.valueOf(operatorStack.pop()));
                 }
                 operatorStack.push(input[i]);
-            } else {
-                postfix.append(input[i]);
+            } else if (input[i] != ' '){
+                //String to hold the number incase it is multiple characters long
+                StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
+                //fill the string with the entire number
+                while (i != input.length - 1 && input[i + 1] != ' ' && input[i + 1] != ')' && input[i + 1] != '(' && !Operator.isOperator(input[i+1])) {
+                    tempNum.append(input[i + 1]);
+                    i++;
+                }
+                elements.add(tempNum.toString());
             }
         }
         while (!operatorStack.isEmpty()) {
             if (operatorStack.peek() == ')' || operatorStack.peek() == '(') {
                 operatorStack.pop();
             } else {
-                postfix.append(operatorStack.pop());
+                elements.add(String.valueOf(operatorStack.pop()));
+            }
+        }
+        StringBuilder postfix = new StringBuilder();
+        for (int i = 0; i < elements.size(); i++) {
+            postfix.append(elements.get(i));
+            if (i != elements.size() - 1) {
+                postfix.append(' ');
             }
         }
         System.out.println(test);
         System.out.println(postfix);
         //initFromExpr(postfix, Form.postfix);
+    }
+
+    static void printStack(Stack stack) {
+        System.out.println(Arrays.toString(stack.toArray()));
     }
 }

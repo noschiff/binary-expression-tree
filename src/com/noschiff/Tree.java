@@ -75,7 +75,7 @@ public class Tree {
                         //String to hold the number incase it is multiple characters long
                         StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
                         //fill the string with the entire number
-                        while (input[i + 1] != ' ' && i != input.length - 1) {
+                        while (i != input.length - 1 && input[i + 1] != ' ') {
                             tempNum.append(input[i + 1]);
                             i++;
                         }
