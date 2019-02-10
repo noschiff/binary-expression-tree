@@ -1,6 +1,6 @@
 package com.noschiff;
 
-import java.util.Objects;
+import java.util.ArrayList;
 import java.util.Stack;
 
 /**
@@ -116,36 +116,55 @@ public class Tree {
                 }
                 break;
             case infix:
-                //TODO - add infix initialization
-                StringBuilder postfix = new StringBuilder();
+                //TODO - cleanup
+                ArrayList<String> elements = new ArrayList<>();
                 Stack<Character> operatorStack = new Stack<>();
 
                 for (int i = 0; i < input.length; i++) {
                     //character is an operator
                     if (Operator.isOperator(input[i])) {
-                        while ((operatorStack.peek() != '(') &&
-                                ((!Operator.charToOperator(input[i]).greaterPrescedenceThan(Operator.charToOperator(operatorStack.peek())))
-                                        || (Operator.charToOperator(input[i]).equalPrescedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).leftAssociative()))) {
-                            postfix.append(operatorStack.pop());
+                        try {
+                            while ((operatorStack.peek() != '(') &&
+                                    ((!Operator.charToOperator(input[i]).greaterPrecedenceThan(Operator.charToOperator(operatorStack.peek())))
+                                            || (Operator.charToOperator(input[i]).equalPrecedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).getAssociativity() == Associativity.LEFT))) {
+                                elements.add(String.valueOf(operatorStack.pop()));
+                            }
+                        } catch (Exception e) {
                         }
                         operatorStack.push(input[i]);
                     } else if (input[i] == '(') {
                         operatorStack.push(input[i]);
                     } else if (input[i] == ')') {
                         while (operatorStack.peek() != '(') {
-                            postfix.append(operatorStack.pop());
+                            elements.add(String.valueOf(operatorStack.pop()));
                         }
-                        operatorStack.push(input[i]);
-                    } else {
-                        postfix.append(input[i]);
+                        operatorStack.pop();
+                    } else if (input[i] != ' ') {
+                        //String to hold the number incase it is multiple characters long
+                        StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
+                        //fill the string with the entire number
+                        while (i != input.length - 1 && input[i + 1] != ' ' && input[i + 1] != ')' && input[i + 1] != '(' && !Operator.isOperator(input[i + 1])) {
+                            tempNum.append(input[i + 1]);
+                            i++;
+                        }
+                        elements.add(tempNum.toString());
                     }
                 }
                 while (!operatorStack.isEmpty()) {
-                    postfix.append(operatorStack.pop());
+                    if (operatorStack.peek() == ')' || operatorStack.peek() == '(') {
+                        operatorStack.pop();
+                    } else {
+                        elements.add(String.valueOf(operatorStack.pop()));
+                    }
                 }
-                System.out.println(postfix);
-                //initFromExpr(postfix, Form.postfix);
-                break;
+                StringBuilder postfix = new StringBuilder();
+                for (int i = 0; i < elements.size(); i++) {
+                    postfix.append(elements.get(i));
+                    if (i != elements.size() - 1) {
+                        postfix.append(' ');
+                    }
+                }
+                return initFromExpr(postfix.toString(), Form.postfix);
         }
         //the only Node in the stack left is the root of the new tree
         return stack.pop();
@@ -185,6 +204,18 @@ public class Tree {
         }
         //If the node is a numeric value, return it
         return node.getValue().getValue();
+    }
+
+    public String getForm(Form form) {
+        switch (form) {
+            case postfix:
+                return postfix();
+            case prefix:
+                return prefix();
+            case infix:
+                return infix();
+        }
+        return null;
     }
 
     public String infix() {
@@ -239,8 +270,9 @@ public class Tree {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Tree tree = (Tree) o;
-        return Objects.equals(root, tree.root);
-    }
 
+        Tree tree = (Tree) o;
+
+        return root != null ? root.equals(tree.root) : tree.root == null;
+    }
 }

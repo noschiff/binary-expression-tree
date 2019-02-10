@@ -6,47 +6,48 @@ package com.noschiff;
  */
 public enum Operator {
 
-    add (1, 1){
+    add(1, Associativity.LEFT) {
         @Override
         public String toString() {
             return "+";
         }
     },
-    sub (1, 1){
+    sub(1, Associativity.LEFT) {
         @Override
         public String toString() {
             return "-";
         }
     },
-    mult (2, 1){
+    mult(2, Associativity.LEFT) {
         @Override
         public String toString() {
             return "×";
         }
     },
-    div (2, 1){
+    div(2, Associativity.LEFT) {
         @Override
         public String toString() {
             return "/";
         }
     },
-    exp (3, 1){
+    exp(3, Associativity.RIGHT) {
         @Override
         public String toString() {
             return "^";
         }
     };
 
-    public int prescedence;
-    public int associativity;
+    private int precedence;
+    private Associativity associativity;
 
-    Operator(int prescedence, int associativity) {
-        this.prescedence = prescedence;
+    Operator(int precedence, Associativity associativity) {
+        this.precedence = precedence;
         this.associativity = associativity;
     }
 
     /**
      * Determines whether or not the character is one of the listed operators
+     *
      * @param c - the character to be checked
      * @return - if the character is a valid operator
      */
@@ -63,6 +64,7 @@ public enum Operator {
 
     /**
      * Finds the appropriate Operator enum value
+     *
      * @param c - the character to be checked
      * @return - the Operator enum value, if there is one
      */
@@ -75,15 +77,21 @@ public enum Operator {
         return null;
     }
 
-    public boolean greaterPrescedenceThan(Operator o) {
+    public boolean greaterPrecedenceThan(Operator o) {
         if (o == null) return true;
-        return (this.prescedence > o.prescedence);
+        return (this.precedence > o.precedence);
     }
-    public boolean equalPrescedence(Operator o) {
+
+    public boolean equalPrecedence(Operator o) {
         if (o == null) return false;
-        return (this.prescedence == o.prescedence);
+        return (this.precedence == o.precedence);
     }
-    public boolean leftAssociative() {
-        return this.associativity == 1;
+
+    /**
+     * @return - the associativity of the operator
+     */
+    public Associativity getAssociativity() {
+        return associativity;
     }
+
 }
