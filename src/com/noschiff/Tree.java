@@ -72,10 +72,10 @@ public class Tree {
                     }
                     //character is a number
                     else if (input[i] != ' ') {
-                        //String to hold the number incase it is multiple characters long
+                        //String to hold the number in case it is multiple characters long
                         StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
                         //fill the string with the entire number
-                        while (i != input.length - 1 && input[i + 1] != ' ') {
+                        while (i != input.length - 1 && input[i + 1] != ' ' && !Operator.isOperator(input[i + 1])) {
                             tempNum.append(input[i + 1]);
                             i++;
                         }
@@ -104,7 +104,7 @@ public class Tree {
                         //String to hold the number incase it is multiple characters long
                         StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
                         //fill the string with the entire number
-                        while (input[i - 1] != ' ' && i != 0) {
+                        while (i != 0 && input[i - 1] != ' ' && !Operator.isOperator(input[i - 1])) {
                             tempNum.append(input[i - 1]);
                             i--;
                         }
