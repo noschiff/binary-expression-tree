@@ -27,11 +27,11 @@ public class Main {
         System.out.println(lambdaTree);
 */
         //build using postfix string
-        Tree pre = new Tree("+ ^ 3.0 2.0 × 5.0 4.0", Form.prefix);
-        Tree post = new Tree("3.0 2.0 ^ 5.0 4.0 × +", Form.postfix);
+        Tree pre = new Tree("+ - ^ 9.0 0.5 2.0 × 5.0 4.0", Form.prefix);
+        Tree post = new Tree("9.0 0.5 ^ 2.0 - 5.0 4.0 × +", Form.postfix);
         System.out.println(post);
         System.out.println(pre);
-        Tree infix = new Tree("((3.0 ^ 2.0) + (5.0 × 4.0))", Form.infix);
+        Tree infix = new Tree("(((9.0 ^ 0.5) - 2.0) + (5.0 × 4.0))", Form.infix);
         System.out.println(infix);
 
         System.out.println(pre.equals(infix));
