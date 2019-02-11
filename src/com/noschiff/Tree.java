@@ -123,14 +123,12 @@ public class Tree {
                 for (int i = 0; i < input.length; i++) {
                     //character is an operator
                     if (Operator.isOperator(input[i])) {
-                        try {
-                            while ((operatorStack.peek() != '(') &&
-                                    ((!Operator.charToOperator(input[i]).greaterPrecedenceThan(Operator.charToOperator(operatorStack.peek())))
-                                            || (Operator.charToOperator(input[i]).equalPrecedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).getAssociativity() == Associativity.LEFT))) {
+                        Operator operator = Operator.charToOperator(input[i]);
+                            while ((!operatorStack.isEmpty() && Operator.isOperator(operatorStack.peek()) &&
+                                    ((!operator.greaterPrecedenceThan(Operator.charToOperator(operatorStack.peek())))
+                                            || (Operator.charToOperator(input[i]).equalPrecedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).getAssociativity() == Associativity.LEFT)))) {
                                 elements.add(String.valueOf(operatorStack.pop()));
                             }
-                        } catch (Exception e) {
-                        }
                         operatorStack.push(input[i]);
                     } else if (input[i] == '(') {
                         operatorStack.push(input[i]);
