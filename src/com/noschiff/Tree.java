@@ -61,7 +61,7 @@ public class Tree {
                     //character is an operator
                     if (Operator.isOperator(input[i])) {
                         //make a new node with the operator
-                        Node root = new Node(Operator.charToOperator(input[i]));
+                        Node root = new Node(Operator.valueOfChar(input[i]));
 
                         //take the top nodes in stack and assign it to be the children
                         root.rightChild = stack.pop();
@@ -90,7 +90,7 @@ public class Tree {
                     //character is an operator
                     if (Operator.isOperator(input[i])) {
                         //make a new node with the operator
-                        Node root = new Node(Operator.charToOperator(input[i]));
+                        Node root = new Node(Operator.valueOfChar(input[i]));
 
                         //take the top nodes in stack and assign it to be the children
                         root.leftChild = stack.pop();
@@ -117,16 +117,19 @@ public class Tree {
                 break;
             case infix:
                 //TODO - cleanup
+                //Shunting-yard algorithm
+                //https://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail
+
                 ArrayList<String> elements = new ArrayList<>();
                 Stack<Character> operatorStack = new Stack<>();
 
                 for (int i = 0; i < input.length; i++) {
                     //character is an operator
                     if (Operator.isOperator(input[i])) {
-                        Operator operator = Operator.charToOperator(input[i]);
+                        Operator operator = Operator.valueOfChar(input[i]);
                             while ((!operatorStack.isEmpty() && Operator.isOperator(operatorStack.peek()) &&
-                                    ((!operator.greaterPrecedenceThan(Operator.charToOperator(operatorStack.peek())))
-                                            || (Operator.charToOperator(input[i]).equalPrecedence(Operator.charToOperator(operatorStack.peek())) && Operator.charToOperator(operatorStack.peek()).getAssociativity() == Associativity.LEFT)))) {
+                                    ((!operator.greaterPrecedenceThan(Operator.valueOfChar(operatorStack.peek())))
+                                            || (Operator.valueOfChar(input[i]).equalPrecedence(Operator.valueOfChar(operatorStack.peek())) && Operator.valueOfChar(operatorStack.peek()).getAssociativity() == Associativity.LEFT)))) {
                                 elements.add(String.valueOf(operatorStack.pop()));
                             }
                         operatorStack.push(input[i]);

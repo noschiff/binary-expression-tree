@@ -70,7 +70,7 @@ public enum Operator {
      * @param c - the character to be checked
      * @return - the Operator enum value, if there is one
      */
-    public static Operator charToOperator(char c) {
+    public static Operator valueOfChar(char c) {
         for (Operator operator : Operator.values()) {
             for (char charRepresentation : operator.charValues) {
                 if (c == charRepresentation) {
@@ -78,7 +78,7 @@ public enum Operator {
                 }
             }
         }
-        return null;
+        return add;
     }
 
     public boolean greaterPrecedenceThan(Operator o) {
@@ -97,5 +97,4 @@ public enum Operator {
     public Associativity getAssociativity() {
         return associativity;
     }
-
 }
