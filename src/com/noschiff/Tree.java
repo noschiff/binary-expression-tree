@@ -116,31 +116,47 @@ public class Tree {
                 }
                 break;
             case infix:
-                //TODO - cleanup
+                //convert infix to postfix
+
                 //Shunting-yard algorithm
                 //https://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail
 
+                //store expression in elements to build at the end
                 ArrayList<String> elements = new ArrayList<>();
+                //holds the operators as well as braces
                 Stack<Character> operatorStack = new Stack<>();
 
+                //go through every character of input
                 for (int i = 0; i < input.length; i++) {
                     //character is an operator
                     if (Operator.isOperator(input[i])) {
+                        //store operator to avoid calling method multiple times
                         Operator operator = Operator.valueOfChar(input[i]);
+
+                        //while ((there is an operator at the top of the operator stack with greater precedence)
+                        //or (the operator at the top of the operator stack has equal precedence and is left associative))
+                        //and (the character at the top of the operator stack is an operator)
                             while ((!operatorStack.isEmpty() && Operator.isOperator(operatorStack.peek()) &&
                                     ((!operator.greaterPrecedenceThan(Operator.valueOfChar(operatorStack.peek())))
                                             || (Operator.valueOfChar(input[i]).equalPrecedence(Operator.valueOfChar(operatorStack.peek())) && Operator.valueOfChar(operatorStack.peek()).getAssociativity() == Associativity.LEFT)))) {
+                                //pop operators from the operator stack onto the output list
                                 elements.add(String.valueOf(operatorStack.pop()));
                             }
                         operatorStack.push(input[i]);
-                    } else if (input[i] == '(') {
+                    }
+                    //character is left brace
+                    else if (input[i] == '(') {
                         operatorStack.push(input[i]);
-                    } else if (input[i] == ')') {
+                    }
+                    //character is right brace
+                    else if (input[i] == ')') {
                         while (operatorStack.peek() != '(') {
                             elements.add(String.valueOf(operatorStack.pop()));
                         }
                         operatorStack.pop();
-                    } else if (input[i] != ' ') {
+                    }
+                    //character is a number
+                    else if (input[i] != ' ') {
                         //String to hold the number incase it is multiple characters long
                         StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
                         //fill the string with the entire number
@@ -158,6 +174,7 @@ public class Tree {
                         elements.add(String.valueOf(operatorStack.pop()));
                     }
                 }
+                //convert element list into String expression
                 StringBuilder postfix = new StringBuilder();
                 for (int i = 0; i < elements.size(); i++) {
                     postfix.append(elements.get(i));
@@ -165,6 +182,7 @@ public class Tree {
                         postfix.append(' ');
                     }
                 }
+                //the root node is initialized from postfix form
                 return initFromExpr(postfix.toString(), Form.postfix);
         }
         //the only Node in the stack left is the root of the new tree
@@ -210,17 +228,13 @@ public class Tree {
     public String getForm(Form form) {
         switch (form) {
             case postfix:
-                return postfix();
+                return postfix(root);
             case prefix:
-                return prefix();
+                return prefix(root);
             case infix:
-                return infix();
+                return infix(root);
         }
         return null;
-    }
-
-    public String infix() {
-        return infix(root);
     }
 
     private String infix(Node node) {
@@ -230,19 +244,11 @@ public class Tree {
         return node.getValue().getValue() + "";
     }
 
-    public String prefix() {
-        return prefix(root);
-    }
-
     private String prefix(Node node) {
         if (node.getValue().getType() == Type.operator) {
             return node.getValue().getOperator().toString() + ' ' + prefix(node.leftChild) + ' ' + prefix(node.rightChild);
         }
         return node.getValue().getValue() + "";
-    }
-
-    public String postfix() {
-        return postfix(root);
     }
 
     private String postfix(Node node) {
@@ -261,9 +267,9 @@ public class Tree {
     public String toString() {
         return "Tree{" +
                 "value=" + evaluate() +
-                ", infix=" + infix() +
-                ", prefix=" + prefix() +
-                ", postfix=" + postfix() +
+                ", infix=" + infix(root) +
+                ", prefix=" + prefix(root) +
+                ", postfix=" + postfix(root) +
                 '}';
     }
 
