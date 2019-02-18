@@ -60,7 +60,7 @@ public class Tree {
      * a mathematical expression in one of three forms
      *
      * @param inputs - math expression stored in Value array
-     * @param form       - the form that the expression is in
+     * @param form   - the form that the expression is in
      * @return - the root node of the tree
      */
     private Node initFromExpr(Element[] inputs, Form form) {
@@ -125,16 +125,16 @@ public class Tree {
                     if (input instanceof Operation) {
                         Operator operator = ((Operation) input).getValue();
 
-                            while (!operatorStack.isEmpty() && operatorStack.peek() instanceof Operation) {
-                                Operator nextOperator = ((Operation) operatorStack.peek()).getValue();
-                                if ( !operator.greaterPrecedenceThan(nextOperator)
+                        while (!operatorStack.isEmpty() && operatorStack.peek() instanceof Operation) {
+                            Operator nextOperator = ((Operation) operatorStack.peek()).getValue();
+                            if (!operator.greaterPrecedenceThan(nextOperator)
                                     || (nextOperator.getAssociativity() == Associativity.LEFT
-                                        && nextOperator.equalPrecedence(operator))) {
-                                    elements.add(operatorStack.pop());
-                                } else {
-                                    break;
-                                }
+                                    && nextOperator.equalPrecedence(operator))) {
+                                elements.add(operatorStack.pop());
+                            } else {
+                                break;
                             }
+                        }
                         operatorStack.push(input);
                     }
                     //character is a brace
@@ -148,7 +148,7 @@ public class Tree {
                         }
                     }
                     //character is a number
-                    else if (input instanceof Number){
+                    else if (input instanceof Number) {
                         elements.add(input);
                     }
                 }

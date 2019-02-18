@@ -28,8 +28,7 @@ public abstract class Element<T> {
             //character is an operator
             if (Operator.isOperator(input[i])) {
                 values.add(new Operation(Operator.valueOfChar(input[i])));
-            }
-            else if(EBracket.isBracket(input[i])) {
+            } else if (EBracket.isBracket(input[i])) {
                 values.add(new Bracket(EBracket.parseBracket(input[i])));
             }
             //character is a number

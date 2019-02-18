@@ -1,9 +1,8 @@
 package com.noschiff;
 
-import java.util.Objects;
-
 /**
  * Single node that can be apart of a tree
+ *
  * @author noschiff
  */
 public class Node {
