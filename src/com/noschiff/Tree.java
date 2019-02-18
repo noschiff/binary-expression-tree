@@ -1,7 +1,6 @@
 package com.noschiff;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -33,7 +32,7 @@ public class Tree {
     }
 
     /**
-     * Constructor that takes a mathematical expression and initializes the tree
+     * Constructor that takes a mathematical expression as a String and initializes the tree
      *
      * @param expression - math expression stored in String
      * @param form       - the form that the expression is in
@@ -43,15 +42,28 @@ public class Tree {
     }
 
     /**
+     * Constructor that takes a mathematical expression as a Value array and initializes the tree
+     *
+     * @param expression - math expression stored in Value array
+     * @param form       - the form that the expression is in
+     */
+    public Tree(Element[] expression, Form form) {
+        this.root = initFromExpr(expression, form);
+    }
+
+    private Node initFromExpr(String expression, Form form) {
+        return initFromExpr(Element.parseExpression(expression), form);
+    }
+
+    /**
      * Creates the root Node with all children initialized from
      * a mathematical expression in one of three forms
      *
-     * @param expression - math expression stored in String
+     * @param inputs - math expression stored in Value array
      * @param form       - the form that the expression is in
      * @return - the root node of the tree
      */
-    private Node initFromExpr(String expression, Form form) {
-        Element[] inputs = Element.parseExpression(expression);
+    private Node initFromExpr(Element[] inputs, Form form) {
         Stack<Node> stack = new Stack<>();
 
         //read input characters based off of form inputted

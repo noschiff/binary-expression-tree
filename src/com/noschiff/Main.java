@@ -27,17 +27,19 @@ public class Main {
         System.out.println(lambdaTree);
 */
         //build using postfix string
-        Tree pre = new Tree("+ - ^ 9.0 0.5 2.0 × 5.0 4.0", Form.prefix);
         Tree post = new Tree("9.0 0.5 ^ 2.0 - 5.0 4.0 × +", Form.postfix);
+        Tree pre = new Tree("+ - ^ 9.0 0.5 2.0 × 5.0 4.0", Form.prefix);
+        Tree infix = new Tree("(((9.0 ^ 0.5) - 2.0) + (5.0 × 4.0))", Form.infix);
         System.out.println(post);
         System.out.println(pre);
-        Tree infix = new Tree("(((9.0 ^ 0.5) - 2.0) + (5.0 × 4.0))", Form.infix);
         System.out.println(infix);
 
-        System.out.println(pre.equals(infix));
+        Element[] inputArr = Element.parseExpression("+ - ^ 9.0 0.5 2.0 × 5.0 4.0");
+        Tree elementArr = new Tree(inputArr, Form.prefix);
+        System.out.println(elementArr);
 
-        String expr = "((3.0 ^ 2.0) + (5.0 × 4.0))";
-        System.out.println(expr + " from infix to postfix: " + convert(expr, Form.infix, Form.postfix));
+        //checks if the trees are equal
+        System.out.println(post.equals(pre) && pre.equals(infix) && infix.equals(elementArr));
     }
 
     private static String convert(String expression, Form from, Form to) {
