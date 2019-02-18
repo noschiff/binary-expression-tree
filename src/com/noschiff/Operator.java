@@ -70,7 +70,7 @@ public enum Operator {
      * @param c - the character to be checked
      * @return - the Operator enum value, if there is one
      */
-    public static Operator valueOfChar(char c) {
+    public static Operator parseOperator(char c) {
         for (Operator operator : Operator.values()) {
             for (char charRepresentation : operator.charValues) {
                 if (c == charRepresentation) {

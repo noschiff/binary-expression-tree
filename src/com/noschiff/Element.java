@@ -2,6 +2,14 @@ package com.noschiff;
 
 import java.util.ArrayList;
 
+/**
+ * Highest level class that represents a part of an expression
+ * Purpose: boxes the value in an object
+ * Note: is abstract; only elements that are a child classes are allowed
+ *
+ * @param <T> - the type of value that is held in the object
+ * @author noschiff
+ */
 public abstract class Element<T> {
 
     private T value;
@@ -27,7 +35,7 @@ public abstract class Element<T> {
         for (int i = 0; i < input.length; i++) {
             //character is an operator
             if (Operator.isOperator(input[i]) && ((i == (input.length - 1)) || (input[i + 1] == ' '))) {
-                values.add(new Operation(Operator.valueOfChar(input[i])));
+                values.add(new Operation(Operator.parseOperator(input[i])));
             } else if (EBracket.isBracket(input[i])) {
                 values.add(new Bracket(EBracket.parseBracket(input[i])));
             }

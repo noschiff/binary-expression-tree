@@ -1,5 +1,9 @@
 package com.noschiff;
 
+/**
+ * Either a LEFT or RIGHT bracket
+ * Used in infix expressions
+ */
 public enum EBracket {
     LEFT(new char[]{'(', '['}),
     RIGHT(new char[]{')', ']'});
