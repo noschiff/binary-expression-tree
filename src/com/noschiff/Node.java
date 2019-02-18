@@ -14,32 +14,20 @@ public class Node {
         this.value = value;
     }
 
-    public Node(double value) {
-        this.value = new Value(value);
-    }
-
-    public Node(Operator operator) {
-        this.value = new Value(operator);
-    }
-
-    public Node(Node leftChild, Node rightChild, Value value) {
-        this.leftChild = leftChild;
-        this.rightChild = rightChild;
-        this.value = value;
+    public Value getValue() {
+        return value;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Node node = (Node) o;
-        return Objects.equals(leftChild, node.leftChild) &&
-                Objects.equals(rightChild, node.rightChild) &&
-                Objects.equals(value, node.value);
-    }
 
-    public Value getValue() {
-        return value;
+        Node node = (Node) o;
+
+        if (leftChild != null ? !leftChild.equals(node.leftChild) : node.leftChild != null) return false;
+        if (rightChild != null ? !rightChild.equals(node.rightChild) : node.rightChild != null) return false;
+        return value != null ? value.equals(node.value) : node.value == null;
     }
 
 }

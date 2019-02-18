@@ -1,6 +1,7 @@
 package com.noschiff;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Stack;
 
 /**
@@ -50,68 +51,48 @@ public class Tree {
      * @return - the root node of the tree
      */
     private Node initFromExpr(String expression, Form form) {
-        char[] input = expression.toCharArray();
+        Element[] inputs = Element.parseExpression(expression);
         Stack<Node> stack = new Stack<>();
 
         //read input characters based off of form inputted
         switch (form) {
             case postfix:
                 //starts at left and moves to the right
-                for (int i = 0; i < input.length; i++) {
-                    //character is an operator
-                    if (Operator.isOperator(input[i])) {
-                        //make a new node with the operator
-                        Node root = new Node(Operator.valueOfChar(input[i]));
+                for (Element input : inputs) {
+                    if (input instanceof Value) {
+                        if (input instanceof Operation) {
+                            //make a new node with the operator
+                            Node root = new Node((Value) input);
 
-                        //take the top nodes in stack and assign it to be the children
-                        root.rightChild = stack.pop();
-                        root.leftChild = stack.pop();
+                            //take the top nodes in stack and assign it to be the children
+                            root.rightChild = stack.pop();
+                            root.leftChild = stack.pop();
 
-                        //put the Node into top of stack
-                        stack.push(root);
-                    }
-                    //character is a number
-                    else if (input[i] != ' ') {
-                        //String to hold the number in case it is multiple characters long
-                        StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
-                        //fill the string with the entire number
-                        while (i != input.length - 1 && input[i + 1] != ' ' && !Operator.isOperator(input[i + 1])) {
-                            tempNum.append(input[i + 1]);
-                            i++;
+                            //put the Node into top of stack
+                            stack.push(root);
+                        } else if (input instanceof Number) {
+                            stack.push(new Node((Value) input));
                         }
-
-                        //add a new Node with value of tempNum
-                        stack.push(new Node(Double.parseDouble(tempNum.toString())));
                     }
                 }
                 break;
             case prefix:
-                for (int i = input.length - 1; i >= 0; i--) {
-                    //character is an operator
-                    if (Operator.isOperator(input[i])) {
-                        //make a new node with the operator
-                        Node root = new Node(Operator.valueOfChar(input[i]));
+                for (int i = inputs.length - 1; i >= 0; i--) {
+                    if (inputs[i] instanceof Value) {
+                        Value input = (Value) inputs[i];
+                        if (input instanceof Operation) {
+                            //make a new node with the operator
+                            Node root = new Node(input);
 
-                        //take the top nodes in stack and assign it to be the children
-                        root.leftChild = stack.pop();
-                        root.rightChild = stack.pop();
+                            //take the top nodes in stack and assign it to be the children
+                            root.leftChild = stack.pop();
+                            root.rightChild = stack.pop();
 
-                        //put the Node into top of stack
-                        stack.push(root);
-                    }
-                    //character is a number
-                    else if (input[i] != ' ') {
-                        //String to hold the number incase it is multiple characters long
-                        StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
-                        //fill the string with the entire number
-                        while (i != 0 && input[i - 1] != ' ' && !Operator.isOperator(input[i - 1])) {
-                            tempNum.append(input[i - 1]);
-                            i--;
+                            //put the Node into top of stack
+                            stack.push(root);
+                        } else if (input instanceof Number) {
+                            stack.push(new Node(input));
                         }
-
-                        //add a new Node with value of tempNum
-                        stack.push(new Node(Double.parseDouble(tempNum.reverse().toString())));
-
                     }
                 }
                 break;
@@ -122,56 +103,48 @@ public class Tree {
                 //https://en.wikipedia.org/wiki/Shunting-yard_algorithm#The_algorithm_in_detail
 
                 //store expression in elements to build at the end
-                ArrayList<String> elements = new ArrayList<>();
+                ArrayList<Element> elements = new ArrayList<>();
                 //holds the operators as well as braces
-                Stack<Character> operatorStack = new Stack<>();
+                Stack<Element> operatorStack = new Stack<>();
 
-                //go through every character of input
-                for (int i = 0; i < input.length; i++) {
+                //go through every input
+                for (Element input : inputs) {
                     //character is an operator
-                    if (Operator.isOperator(input[i])) {
-                        //store operator to avoid calling method multiple times
-                        Operator operator = Operator.valueOfChar(input[i]);
+                    if (input instanceof Operation) {
+                        Operator operator = ((Operation) input).getValue();
 
-                        //while ((there is an operator at the top of the operator stack with greater precedence)
-                        //or (the operator at the top of the operator stack has equal precedence and is left associative))
-                        //and (the character at the top of the operator stack is an operator)
-                            while ((!operatorStack.isEmpty() && Operator.isOperator(operatorStack.peek()) &&
-                                    ((!operator.greaterPrecedenceThan(Operator.valueOfChar(operatorStack.peek())))
-                                            || (Operator.valueOfChar(input[i]).equalPrecedence(Operator.valueOfChar(operatorStack.peek())) && Operator.valueOfChar(operatorStack.peek()).getAssociativity() == Associativity.LEFT)))) {
-                                //pop operators from the operator stack onto the output list
-                                elements.add(String.valueOf(operatorStack.pop()));
+                            while (!operatorStack.isEmpty() && operatorStack.peek() instanceof Operation) {
+                                Operator nextOperator = ((Operation) operatorStack.peek()).getValue();
+                                if ( !operator.greaterPrecedenceThan(nextOperator)
+                                    || (nextOperator.getAssociativity() == Associativity.LEFT
+                                        && nextOperator.equalPrecedence(operator))) {
+                                    elements.add(operatorStack.pop());
+                                } else {
+                                    break;
+                                }
                             }
-                        operatorStack.push(input[i]);
+                        operatorStack.push(input);
                     }
-                    //character is left brace
-                    else if (input[i] == '(') {
-                        operatorStack.push(input[i]);
-                    }
-                    //character is right brace
-                    else if (input[i] == ')') {
-                        while (operatorStack.peek() != '(') {
-                            elements.add(String.valueOf(operatorStack.pop()));
+                    //character is a brace
+                    else if (input instanceof Bracket) {
+                        if (input.getValue() == EBracket.LEFT) {
+                            operatorStack.push(input);
+                        } else if (input.getValue() == EBracket.RIGHT) {
+                            while (operatorStack.peek().getValue() != EBracket.LEFT) {
+                                elements.add(operatorStack.pop());
+                            }
                         }
-                        operatorStack.pop();
                     }
                     //character is a number
-                    else if (input[i] != ' ') {
-                        //String to hold the number incase it is multiple characters long
-                        StringBuilder tempNum = new StringBuilder(Character.toString(input[i]));
-                        //fill the string with the entire number
-                        while (i != input.length - 1 && input[i + 1] != ' ' && input[i + 1] != ')' && input[i + 1] != '(' && !Operator.isOperator(input[i + 1])) {
-                            tempNum.append(input[i + 1]);
-                            i++;
-                        }
-                        elements.add(tempNum.toString());
+                    else if (input instanceof Number){
+                        elements.add(input);
                     }
                 }
                 while (!operatorStack.isEmpty()) {
-                    if (operatorStack.peek() == ')' || operatorStack.peek() == '(') {
+                    if (operatorStack.peek() instanceof Bracket) {
                         operatorStack.pop();
                     } else {
-                        elements.add(String.valueOf(operatorStack.pop()));
+                        elements.add(operatorStack.pop());
                     }
                 }
                 //convert element list into String expression
@@ -206,9 +179,9 @@ public class Tree {
      */
     private double evaluate(Node node) {
         //If the node is an operator, operate on its children
-        if (node.getValue().getType() == Type.operator) {
+        if (node.getValue() instanceof Operation) {
             //Different operations for each possible operator
-            switch (node.getValue().getOperator()) {
+            switch (((Operation) node.getValue()).getValue()) {
                 case add:
                     return evaluate(node.leftChild) + evaluate(node.rightChild);
                 case sub:
@@ -221,8 +194,10 @@ public class Tree {
                     return Math.pow(evaluate(node.leftChild), evaluate(node.rightChild));
             }
         }
-        //If the node is a numeric value, return it
-        return node.getValue().getValue();
+        if (node.getValue() instanceof Number) {
+            return ((Number) node.getValue()).getValue();
+        }
+        return 0;
     }
 
     public String getForm(Form form) {
@@ -238,22 +213,22 @@ public class Tree {
     }
 
     private String infix(Node node) {
-        if (node.getValue().getType() == Type.operator) {
-            return '(' + infix(node.leftChild) + ' ' + node.getValue().getOperator().toString() + ' ' + infix(node.rightChild) + ')';
+        if (node.getValue() instanceof Operation) {
+            return '(' + infix(node.leftChild) + ' ' + node.getValue().getValue() + ' ' + infix(node.rightChild) + ')';
         }
         return node.getValue().getValue() + "";
     }
 
     private String prefix(Node node) {
-        if (node.getValue().getType() == Type.operator) {
-            return node.getValue().getOperator().toString() + ' ' + prefix(node.leftChild) + ' ' + prefix(node.rightChild);
+        if (node.getValue() instanceof Operation) {
+            return node.getValue().getValue().toString() + ' ' + prefix(node.leftChild) + ' ' + prefix(node.rightChild);
         }
         return node.getValue().getValue() + "";
     }
 
     private String postfix(Node node) {
-        if (node.getValue().getType() == Type.operator) {
-            return postfix(node.leftChild) + ' ' + postfix(node.rightChild) + ' ' + node.getValue().getOperator().toString();
+        if (node.getValue() instanceof Operation) {
+            return postfix(node.leftChild) + ' ' + postfix(node.rightChild) + ' ' + node.getValue().getValue().toString();
         }
         return node.getValue().getValue() + "";
     }

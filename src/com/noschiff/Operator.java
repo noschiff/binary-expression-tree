@@ -78,7 +78,7 @@ public enum Operator {
                 }
             }
         }
-        return add;
+        return null;
     }
 
     public boolean greaterPrecedenceThan(Operator o) {
