@@ -26,7 +26,7 @@ public abstract class Element<T> {
         //starts at left and moves to the right
         for (int i = 0; i < input.length; i++) {
             //character is an operator
-            if (Operator.isOperator(input[i])) {
+            if (Operator.isOperator(input[i]) && ((i == (input.length - 1)) || (input[i + 1] == ' '))) {
                 values.add(new Operation(Operator.valueOfChar(input[i])));
             } else if (EBracket.isBracket(input[i])) {
                 values.add(new Bracket(EBracket.parseBracket(input[i])));

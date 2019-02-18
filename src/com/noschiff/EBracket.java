@@ -11,7 +11,7 @@ public enum EBracket {
     }
 
     /**
-     * @return - the default char representation of the operator
+     * @return - the default char representation of the bracket
      */
     @Override
     public String toString() {
