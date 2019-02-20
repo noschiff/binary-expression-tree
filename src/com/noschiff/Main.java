@@ -35,6 +35,7 @@ public class Main {
         System.out.println(pre);
         System.out.println(infix);
 
+        //build using Element array
         Element[] inputArr = Element.parseExpression("+ - ^ 9.0 0.5 2.0 × 5.0 -4.0");
         Tree elementArr = new Tree(inputArr, Form.prefix);
         System.out.println(elementArr);

@@ -1,6 +1,7 @@
 package com.noschiff;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,6 +90,11 @@ public abstract class Element<T> {
         } else {
             return List.of(node.getValue());
         }
+    }
+
+    public static <E> String arrayToString(E[] array) {
+        return Arrays.toString(array).replace("[","").replace("]","")
+                .replace(",","").replace("( ","(").replace(" )",")");
     }
 
     @Override

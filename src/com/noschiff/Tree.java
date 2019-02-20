@@ -223,7 +223,7 @@ public class Tree {
         //form is passed into parseTree() to specify the form of the returned array
         //converts the array into a String using arrayToString()
         
-        return Util.arrayToString(Element.parseTree(root, form));
+        return Element.arrayToString(Element.parseTree(root, form));
     }
 
     /**
