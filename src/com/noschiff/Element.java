@@ -1,6 +1,7 @@
 package com.noschiff;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Highest level class that represents a part of an expression
@@ -53,6 +54,41 @@ public abstract class Element<T> {
             }
         }
         return values.toArray(new Element[0]);
+    }
+
+    public static Element[] parseTree(Node root, Form output) {
+        return parseNode(root, output).toArray(new Element[0]);
+    }
+
+    private static List<Element> parseNode(Node node, Form output) {
+        if (node.getValue() instanceof Operation) {
+            List<List<Element>> elements = new ArrayList<>();
+
+            switch (output) {
+                case infix:
+                    elements.add(List.of(new Bracket(EBracket.LEFT)));
+                    elements.add(parseNode(node.leftChild, Form.infix));
+                    elements.add(List.of(node.getValue()));
+                    elements.add(parseNode(node.rightChild, Form.infix));
+                    elements.add(List.of(new Bracket(EBracket.RIGHT)));
+                    break;
+                case prefix:
+                    elements.add(List.of(node.getValue()));
+                    elements.add(parseNode(node.leftChild, Form.prefix));
+                    elements.add(parseNode(node.rightChild, Form.prefix));
+                    break;
+                case postfix:
+                    elements.add(parseNode(node.leftChild, Form.postfix));
+                    elements.add(parseNode(node.rightChild, Form.postfix));
+                    elements.add(List.of(node.getValue()));
+                    break;
+            }
+
+            return Util.flattenList(elements);
+
+        } else {
+            return List.of(node.getValue());
+        }
     }
 
     @Override
