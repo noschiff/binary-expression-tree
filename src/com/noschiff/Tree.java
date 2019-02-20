@@ -212,37 +212,18 @@ public class Tree {
         return 0;
     }
 
+    /**
+     * Converts the tree to a mathematical expression, stored in a String
+     *
+     * @param form - the form the expression will be output in
+     * @return - the mathematical expression stored in a String
+     */
     public String getForm(Form form) {
-        switch (form) {
-            case postfix:
-                return postfix(root);
-            case prefix:
-                return prefix(root);
-            case infix:
-                return infix(root);
-        }
-        return null;
-    }
-
-    private String infix(Node node) {
-        if (node.getValue() instanceof Operation) {
-            return '(' + infix(node.leftChild) + ' ' + node.getValue().getValue() + ' ' + infix(node.rightChild) + ')';
-        }
-        return node.getValue().getValue() + "";
-    }
-
-    private String prefix(Node node) {
-        if (node.getValue() instanceof Operation) {
-            return node.getValue().getValue().toString() + ' ' + prefix(node.leftChild) + ' ' + prefix(node.rightChild);
-        }
-        return node.getValue().getValue() + "";
-    }
-
-    private String postfix(Node node) {
-        if (node.getValue() instanceof Operation) {
-            return postfix(node.leftChild) + ' ' + postfix(node.rightChild) + ' ' + node.getValue().getValue().toString();
-        }
-        return node.getValue().getValue() + "";
+        //parses the tree starting from the root into an Element array
+        //form is passed into parseTree() to specify the form of the returned array
+        //converts the array into a String using arrayToString()
+        
+        return Util.arrayToString(Element.parseTree(root, form));
     }
 
     /**
@@ -254,9 +235,9 @@ public class Tree {
     public String toString() {
         return "Tree{" +
                 "value=" + evaluate() +
-                ", infix=" + infix(root) +
-                ", prefix=" + prefix(root) +
-                ", postfix=" + postfix(root) +
+                ", infix=" + getForm(Form.infix) +
+                ", prefix=" + getForm(Form.prefix) +
+                ", postfix=" + getForm(Form.postfix) +
                 '}';
     }
 
